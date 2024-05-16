@@ -2,33 +2,67 @@
   "menu": [
     {
       "url": "/",
-      "name": "Home",
+      "name": "Inicio2",
       "icon": "menu-icon tf-icons ti ti-smart-home",
       "slug": "pages-home"
     },
     {
-      "url": "page-2",
-      "icon": "menu-icon tf-icons ti ti-file",
-      "name": "Page 2",
-      "slug": "pages-page-2"
+      "icon": "menu-icon tf-icons ti ti-package",
+      "name": "Catalogos",
+      "slug": "pages-catalogos",
+      "submenu": [
+        {
+          "url": "/tipo-movimiento",
+          "name": "Tipo de movimiento",
+          "slug": "pages-catalogos-tipo-movimiento"
+        }
+      ]
     },
     {
-      "url": "pages/misc-error",
-      "name": "Error",
-      "icon": "menu-icon tf-icons ti ti-alert-triangle",
-      "slug": "pages-misc-error",
-      "target": "_blank"
+      "icon": "menu-icon tf-icons ti ti-package",
+      "name": "Inventario",
+      "slug": "pages-inventario",
+      "submenu": [
+        {
+          "url": "/nuevo",
+          "name": "Nuevo producto",
+          "slug": "pages-inventario-nuevo"
+        },
+        {
+          "url": "/",
+          "name": "Listado de productos",
+          "slug": "pages-inventario-listado"
+        }
+      ]
+    },
+    {
+      "icon": "menu-icon tf-icons ti ti-package-export",
+      "name": "Salida de productos",
+      "slug": "pages-salida",
+      "submenu": [
+        {
+          "url": "/",
+          "name": "Listado de productos (vista)",
+          "slug": "pages-inventario-listado"
+        }
+      ]
+    },
+    {
+      "url": "historial",
+      "icon": "menu-icon tf-icons ti ti-archive",
+      "name": "Historial",
+      "slug": "pages-historial"
     },
     {
       "url": "auth/login-basic",
-      "name": "Login",
+      "name": "Iniciar Sesión",
       "icon": "menu-icon tf-icons ti ti-login",
       "slug": "auth-login-basic",
       "target": "_blank"
     },
     {
       "url": "auth/register-basic",
-      "name": "Register",
+      "name": "Registrarse",
       "icon": "menu-icon tf-icons ti ti-user",
       "slug": "auth-register-basic",
       "target": "_blank"
