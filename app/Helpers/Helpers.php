@@ -31,13 +31,13 @@ class Helpers
       'footerFixed' => false,
       'customizerControls' => [
         'rtl',
-      'style',
-      'headerType',
-      'contentLayout',
-      'layoutCollapsed',
-      'showDropdownOnHover',
-      'layoutNavbarOptions',
-      'themes',
+        'style',
+        'headerType',
+        'contentLayout',
+        'layoutCollapsed',
+        'showDropdownOnHover',
+        'layoutNavbarOptions',
+        'themes',
       ],
       //   'defaultLanguage'=>'en',
     ];
@@ -92,13 +92,12 @@ class Helpers
       }
     }
     $styleVal = $data['myStyle'] == "dark" ? "dark" : "light";
-    if(isset($_COOKIE['mode'])){
-      if($_COOKIE['mode'] === "system"){
-        if(isset($_COOKIE['colorPref'])) {
+    if (isset($_COOKIE['mode'])) {
+      if ($_COOKIE['mode'] === "system") {
+        if (isset($_COOKIE['colorPref'])) {
           $styleVal = Str::lower($_COOKIE['colorPref']);
         }
-      }
-      else {
+      } else {
         $styleVal = $_COOKIE['mode'];
       }
     }
@@ -195,5 +194,112 @@ class Helpers
         }
       }
     }
+  }
+  public static function formatear_fecha($fecha)
+  {
+    $meses = array(
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    );
+    $fecha_arr = explode('-', $fecha);
+    $mes = $meses[(int)$fecha_arr[1] - 1];
+    $dia = (int)$fecha_arr[2];
+    $anio = (int)$fecha_arr[0];
+    return $dia . ' de ' . $mes . ' de ' . $anio;
+  }
+  // funcion para validar si un correo es valido
+  public static function validarEmail($correo)
+  {
+    if (filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  public static function obtenerColumnasIgnorarCRUD()
+  {
+    return ['id', 'created_at', 'updated_at', 'deleted_at', 'team_id',   'creado_por',   'actualizado_por',   'borrado_por'];
+  }
+
+  // tipo de datos por nombre
+  public static function obtenerTipoDatoCRUD()
+  {
+    return [
+      "nombre" => [
+        "tipo" => "string",
+        "tipo_input" => "text",
+        "longitud" => 255,
+        "nullable" => false,
+        "default" => null,
+        // tambien se pueden aceptar numeros
+        "regex" => "/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-0-9]+$/",
+        "placeholder" => "ingrese el nombre"
+      ],
+      "descripcion" => [
+        "tipo" => "string",
+        "tipo_input" => "textarea",
+        "longitud" => 255,
+        "nullable" => false,
+        "default" => null,
+        // tambien se pueden aceptar numeros
+        "regex" => "/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s-0-9]+$/",
+        "placeholder" => "ingrese la descripcion"
+      ],
+      "telefono" => [
+        "tipo" => "string",
+        "tipo_input" => "text",
+        "longitud" => 10,
+        "nullable" => false,
+        "default" => null,
+        "regex" => "/^[0-9]+$/",
+        "placeholder" => "ingrese el telefono"
+      ],
+      "sinonimos" => [
+        "tipo" => "json",
+        "tipo_input" => "select",
+        "atributos" => "multiple='multiple'",
+        "longitud" => null,
+        "nullable" => true,
+        "default" => null,
+        "regex" => null,
+        "placeholder" => "ingrese los sinonimos"
+      ],
+      "visible" => [
+        "tipo" => "boolean",
+        "tipo_input" => "checkbox",
+        "longitud" => null,
+        "nullable" => false,
+        "default" => false,
+        "regex" => null,
+        "placeholder" => "ingrese si es visible",
+        "class" => "form-check-input",
+        "value" => "1"
+      ],
+      "productos_id" => [
+        "tipo" => "select",
+        "tipo_input" => "select",
+        "longitud" => null,
+        "nullable" => true,
+        "default" => null,
+        "regex" => null,
+        "placeholder" => "ingrese el producto",
+        "atributos" => ""
+      ],
+      'precio' => [
+        "tipo" => "number",
+        "tipo_input" => "number",
+        "nullable" => false,
+        "default" => 0,
+        "longitud" => null,
+        // 8 enteros y 2 decimales
+        "regex" => null,
+
+        // placeholder="1.0" step="0.01" min="0" max="10"
+        "placeholder" => "0.00",
+        "step" => "0.01",
+        "min" => "0",
+        "max" => "10",
+      ],
+    ];
   }
 }

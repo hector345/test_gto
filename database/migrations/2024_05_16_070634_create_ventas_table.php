@@ -11,10 +11,10 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('inventario', function (Blueprint $table) {
+    Schema::create('ventas', function (Blueprint $table) {
       $table->id();
-      // producto_id a la tabla producto
-      $table->foreignId('producto_id')->constraint();
+      // producto_id
+      $table->foreignId('producto_id')->constrained();
       // cantidad default 0
       $table->integer('cantidad')->default(0);
       $table->timestamps();
@@ -27,6 +27,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('inventario');
+    Schema::dropIfExists('ventas');
   }
 };

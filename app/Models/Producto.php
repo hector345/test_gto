@@ -10,6 +10,10 @@ class Producto extends Model
 {
   use HasFactory;
   use SoftDeletes;
+  protected $fillable = [
+    'nombre',
+    'precio',
+  ];
   protected $dates = ['deleted_at'];
 
   public function ventas()

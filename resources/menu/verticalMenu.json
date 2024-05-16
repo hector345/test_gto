@@ -7,12 +7,12 @@
       "slug": "pages-home"
     },
     {
-      "icon": "menu-icon tf-icons ti ti-package",
+      "icon": "menu-icon tf-icons ti ti-category",
       "name": "Catalogos",
       "slug": "pages-catalogos",
       "submenu": [
         {
-          "url": "/tipo-movimiento",
+          "url": "/catalogos/tipo-movimiento",
           "name": "Tipo de movimiento",
           "slug": "pages-catalogos-tipo-movimiento"
         }
@@ -24,12 +24,12 @@
       "slug": "pages-inventario",
       "submenu": [
         {
-          "url": "/nuevo",
+          "url": "/catalogos/productos/create",
           "name": "Nuevo producto",
           "slug": "pages-inventario-nuevo"
         },
         {
-          "url": "/",
+          "url": "/catalogos/productos",
           "name": "Listado de productos",
           "slug": "pages-inventario-listado"
         }
