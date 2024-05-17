@@ -63,8 +63,8 @@ Finalmente, inicia el servidor.
 Ingresa en [inventarios.desarrollodigital.tech](inventario.desarrollodigital.tech,"Title") 
 
 <!-- con los usuarios -->
-Administrador: administrador@inventarios.desarrollodigital.tech
-Almacenista: almacenista@inventarios.desarrollodigital.tech
+Administrador: administrador@inventario.desarrollodigital.tech
+Almacenista: almacenista@inventario.desarrollodigital.tech
 
 Contraseña: password
 
