@@ -20,6 +20,13 @@ const pageJsFiles = GetFilesArray('resources/assets/js/*.js');
 // Processing Vendor JS Files
 const vendorJsFiles = GetFilesArray('resources/assets/vendor/js/*.js');
 
+const funcionesJsFiless = GetFilesArray('resources/assets/js/funciones/*.js');
+// historico-inventario, productos,tipo-movimiento
+
+const historicoInventarioJsFiles = GetFilesArray('resources/assets/js/funciones/historico-inventario/*.js');
+const productosJsFiles = GetFilesArray('resources/assets/js/funciones/productos/*.js');
+const tipoMovimientoJsFiles = GetFilesArray('resources/assets/js/funciones/tipo-movimiento/*.js');
+
 // Processing Libs JS Files
 const LibsJsFiles = GetFilesArray('resources/assets/vendor/libs/**/*.js');
 
@@ -58,6 +65,10 @@ export default defineConfig({
         'resources/css/app.css',
         'resources/assets/css/demo.css',
         'resources/js/app.js',
+        ...funcionesJsFiless,
+        ...historicoInventarioJsFiles,
+...productosJsFiles,
+...tipoMovimientoJsFiles,
         ...pageJsFiles,
         ...vendorJsFiles,
         ...LibsJsFiles,
