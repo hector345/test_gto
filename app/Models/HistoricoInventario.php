@@ -11,6 +11,11 @@ class HistoricoInventario extends Model
   use HasFactory;
   use SoftDeletes;
   protected $dates = ['deleted_at'];
+  protected $fillable = [
+    'cantidad',
+    'tipo_movimiento_id',
+    'inventario_id',
+  ];
 
 
   public function tipoMovimiento()

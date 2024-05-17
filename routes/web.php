@@ -9,6 +9,7 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\TipoMovimientoController;
+use App\Http\Controllers\HistoricoInventarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,7 @@ use App\Http\Controllers\TipoMovimientoController;
 
 // Main Page Route
 Route::get('/', [HomePage::class, 'index'])->name('pages-home');
+Route::get('home', [HomePage::class, 'index'])->name('pages-home');
 // Route::get('/page-2', [Page2::class, 'index'])->name('pages-page-2');
 
 // locale
@@ -35,14 +37,29 @@ Route::get('lang/{locale}', [LanguageController::class, 'swap']);
 // Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
 // Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
 
-Route::prefix('catalogos')->middleware('auth:sanctum')->group(function () {
-  Route::resource('productos', ProductosController::class);
-  Route::post('/productos/buscar', [ProductosController::class, 'buscar']);
+Route::prefix('catalogos')->middleware(['auth:sanctum', 'role:Administrador'])->group(function () {
   // tipo-movimiento
   Route::resource('tipo-movimiento', TipoMovimientoController::class);
   Route::post('/tipo-movimiento/buscar', [TipoMovimientoController::class, 'buscar']);
 });
+Route::prefix('catalogos')->middleware(['auth:sanctum', 'role:Administrador|Almacenista'])->group(function () {
+  Route::resource('productos', ProductosController::class);
+  Route::post('/productos/buscar', [ProductosController::class, 'buscar']);
+  // restore post
+  Route::post('/productos/restore/{id}', [ProductosController::class, 'restore']);
+});
+// proceso/historico-inventario lo puede ver el admin
+Route::prefix('proceso')->middleware(['auth:sanctum', 'role:Administrador'])->group(function () {
+  Route::resource('historico-inventario', HistoricoInventarioController::class);
+  Route::post('/historico-inventario/buscar', [HistoricoInventarioController::class, 'buscar']);
+});
 
+Route::group(['middleware' => ['role:Administrador|Almacenista']], function () {
+  // hello word
+  Route::get('/hello', function () {
+    return 'Hello World';
+  });
+});
 Route::middleware([
   'auth:sanctum',
   config('jetstream.auth_session'),

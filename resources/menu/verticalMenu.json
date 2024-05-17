@@ -48,10 +48,10 @@
       ]
     },
     {
-      "url": "historial",
-      "icon": "menu-icon tf-icons ti ti-archive",
-      "name": "Historial",
-      "slug": "pages-historial"
+      "url": "/proceso/historico-inventario",
+      "name": "Historico de inventario",
+      "icon": "menu-icon tf-icons ti ti-package-export",
+      "slug": "pages-historico-inventario"
     },
     {
       "url": "auth/login-basic",

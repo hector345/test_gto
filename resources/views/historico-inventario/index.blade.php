@@ -90,22 +90,13 @@
                                         </td>
                                     @else
                                         {{-- si tipoDato[nombre_campo][tipo] es un json genera <span
-                                  class="badge rounded-pill bg-primary">Primary</span> --}}
-                                        @if (isset($tipoDato[$encabezado]) && $tipoDato[$encabezado]['tipo'] == 'json' && isset($item->$encabezado))
+							class="badge rounded-pill bg-primary">Primary</span> --}}
+                                        @if ($tipoDato[$encabezado]['tipo'] == 'json')
                                             <td class="d-none d-lg-table-cell">
                                                 @foreach ($item->$encabezado as $itemJson)
                                                     <span
                                                         class="badge my-1 me-1 rounded-pill bg-primary">{{ $itemJson }}</span>
                                                 @endforeach
-                                            </td>
-                                            {{-- y si es "visible" se muestra icono de ojo y si no icono de ojo tachado --}}
-                                        @elseif ($encabezado == 'visible')
-                                            <td class="d-none d-lg-table-cell">
-                                                @if ($item->$encabezado)
-                                                    <i class="ti ti-eye"></i>
-                                                @else
-                                                    <i class="ti ti-eye-off"></i>
-                                                @endif
                                             </td>
                                         @else
                                             <td class="d-none d-lg-table-cell">
@@ -119,18 +110,10 @@
                                         <a href="{{ url($ruta_web . '/' . $item->id . '/edit') }}" class="text-body">
                                             <i class="ti ti-edit ti-sm me-2"></i>
                                         </a>
-                                        {{--  borrar si esta visible es 1 --}}
-                                        @if ($item->visible)
-                                            <a class="text-body borrar" data-id="{{ $item->id }}">
-                                                <i class="ti ti-trash ti-sm"></i>
-                                            </a>
-                                        @else
-                                            {{-- recuperar --}}
-                                            <a class="text-body recuperar" data-id="{{ $item->id }}">
-                                                <i class="ti ti-reload ti-sm"></i>
-                                            </a>
-                                        @endif
-
+                                        {{-- borrar --}}
+                                        <a class="text-body borrar" data-id="{{ $item->id }}">
+                                            <i class="ti ti-trash ti-sm"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

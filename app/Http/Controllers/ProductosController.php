@@ -13,6 +13,9 @@ use App\Rules\UniqueInTableAndSynonyms;
 use App\Models\Producto;
 // Schema
 use Illuminate\Support\Facades\Schema;
+use App\Rules\GreaterThanCurrentQuantity;
+use Illuminate\Support\Facades\Auth;
+
 
 class ProductosController extends Controller
 {
@@ -22,7 +25,8 @@ class ProductosController extends Controller
   public $columnas_crud = [
     'nombre',
     'precio',
-    // 'visible',
+    'cantidad',
+    'visible',
   ];
 
   /**
@@ -32,16 +36,34 @@ class ProductosController extends Controller
    */
   public function index(Request  $request)
   {
+
     // path request
     $ruta_web = $request->path();
     // si tiene ?page=1 o cualquier numero, entonces se usa el numero de pagina que viene en la url
+
+
     if ($request->has('page')) {
       // no traer team
-      $registros = Producto::latest()->paginate(10)->withQueryString();
+      $registros = Producto::withTrashed()->latest()->paginate(10)->withQueryString();
     } else {
       // si no tiene ?page=1 o cualquier numero, entonces se usa la pagina 1
-      $registros = Producto::latest()->paginate(10);
+      $registros = Producto::withTrashed()->latest()->paginate(10);
     }
+
+
+    // with inventario
+    $registros->load('inventario');
+    // poner al mismo nivel el campo "cantidad" de la relacion
+    $registros->map(function ($registro) {
+      if ($registro->inventario) {
+        $registro->cantidad = $registro->inventario->cantidad;
+      } else {
+        $registro->cantidad = 0; // o cualquier valor predeterminado que desees
+      }
+      // Agregar la columna "visible"
+      $registro->visible = $registro->deleted_at ? false : true;
+      return $registro;
+    });
     $nombre_ruta = Route::currentRouteName();
 
     return view($nombre_ruta, [
@@ -62,6 +84,14 @@ class ProductosController extends Controller
    */
   public function create()
   {
+    // si el usuario no tiene rol de administrador sacar de aqui
+    $user = Auth::user();
+    $roles_del_usuario = $user->getRoleNames(); // Devuelve una colección de los nombres de los roles
+    $roles_permitidos = ['Administrador'];
+    // regresar base_url
+    if (!$user->hasAnyRole($roles_permitidos)) {
+      abort(403, 'No tienes permiso para acceder a este módulo');
+    }
     // consultar los campos y tipos de datos de la tabla
     $registro = Producto::class;
     $tableColumns = \Schema::getColumnListing((new $registro)->getTable());
@@ -91,26 +121,32 @@ class ProductosController extends Controller
   public function store(Request $request)
   {
     $nombre_tabla = (new Producto)->getTable();
-    $validator = Validator::make($request->all()[$nombre_tabla], [
-      'nombre' => [
-        'required',
-        new UniqueInTableAndSynonyms($nombre_tabla),
-      ],
-    ], [
-      'nombre.unique' => 'El nombre ya existe',
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json([
-        'message' => 'Error al crear ' . $this->nombre_crud,
-        'error' => true,
-        'errors' => $validator->errors(),
-      ]);
-    }
+    $datos = $request->all();
     try {
       DB::beginTransaction();
-      $datos = $request->all();
       $registro = Producto::create($datos[$nombre_tabla]);
+      // agregar cantidad a la relacion inventario
+      $registro->inventario()->create($datos['productos']['inventario']);
+
+      // Validar la cantidad después de crear el producto
+      $validator = Validator::make($datos['productos']['inventario'], [
+        'cantidad' => [
+          'numeric',
+          'min:0',
+        ],
+      ], [
+        'cantidad.min' => 'La cantidad no puede ser menor a 0',
+      ]);
+
+      if ($validator->fails()) {
+        DB::rollback();
+        return response()->json([
+          'message' => 'Error al crear ' . $this->nombre_crud,
+          'error' => true,
+          'errors' => $validator->errors(),
+        ]);
+      }
+
       $nombre_ruta = Route::currentRouteName();
       $nombre_ruta_sin_punto = explode('.', $nombre_ruta)[0];
       DB::commit();
@@ -182,47 +218,74 @@ class ProductosController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
+
+
+
   public function update(Request $request, $id_tabla)
   {
     $nombre_tabla = (new Producto)->getTable();
-    $validator = Validator::make($request->all()[$nombre_tabla], [
-      'nombre' => [
-        'required',
-        new UniqueInTableAndSynonyms($nombre_tabla, $id_tabla),
-      ]
-    ], [
-      'nombre.required' => 'El nombre es requerido',
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json([
-        'message' => 'Error al editar ' . $this->nombre_crud,
-        'error' => true,
-        'errors' => $validator->errors(),
-      ]);
-    }
     try {
       DB::beginTransaction();
-      $registro = Producto::where('id', $id_tabla)->firstOrFail();
+      $registro = Producto::where('id', $id_tabla)->with('inventario')->firstOrFail();
       $nombre_tabla = $registro->getTable();
+      $cantidad_anterior = $registro->inventario->cantidad;
       $data = $request->all(); // Get all form data
+      // agregar id a $data['productos'] usando el id de tabla
+      $data['productos']['id'] = $id_tabla;
+
+      // agregar producto_id a $data['productos']['inventario']
+      $data['productos']['inventario']['producto_id'] = $registro->id;
       // dd($data);
-      $registro->update($data[$nombre_tabla]);
-      $nombre_ruta = Route::currentRouteName();
-      $nombre_ruta_sin_punto = explode('.', $nombre_ruta)[0];
-      DB::commit();
-      return response()->json([
-        'message' => 'Se actualizó ' . $this->nombre_crud . ' con éxito',
-        'data' => $registro,
-        'url_redirect' => route($nombre_ruta_sin_punto . '.index'),
-        'error' => false,
+      // Validar la cantidad después de encontrar el producto
+      $validator = Validator::make($data[$nombre_tabla], [
+        'nombre' => [
+          'required',
+          new UniqueInTableAndSynonyms($nombre_tabla, $id_tabla),
+        ],
+        'inventario.cantidad' => [
+          'numeric',
+          'min:0',
+          new GreaterThanCurrentQuantity($registro, $cantidad_anterior),
+        ],
+      ], [
+        'nombre.required' => 'El nombre es requerido',
+        'nombre.UniqueInTableAndSynonyms' => 'El nombre ya existe',
+        'inventario.cantidad.min' => 'La cantidad no puede ser menor a 0',
+        'inventario.cantidad.GreaterThanCurrentQuantity' => 'La cantidad no puede ser menor a la actual',
       ]);
+
+      if ($validator->fails()) {
+        DB::rollback();
+        return response()->json([
+          'message' => 'Error al editar ' . $this->nombre_crud,
+          'error' => true,
+          'errors' => $validator->errors(),
+        ]);
+      } else {
+        $registro->update($data['productos']);
+        // agregar producto_id a $data['productos']['inventario']
+        $data['productos']['inventario']['producto_id'] = $registro->id;
+
+        $registro->inventario()->update($data['productos']['inventario']);
+        $nombre_ruta = Route::currentRouteName();
+        $nombre_ruta_sin_punto = explode('.', $nombre_ruta)[0];
+        DB::commit();
+        return response()->json([
+          'message' => 'Se actualizó ' . $this->nombre_crud . ' con éxito',
+          'data' => $registro,
+          'url_redirect' => route($nombre_ruta_sin_punto . '.index'),
+          'error' => false,
+        ]);
+      }
     } catch (\Exception $e) {
       DB::rollback();
       // Aquí puedes manejar el error como prefieras, por ejemplo, devolver una respuesta JSON con un mensaje de error.
       return response()->json(['error' => $e->getMessage()], 500);
     }
   }
+
+
+
 
   /**
    * Remove the specified resource from storage.
@@ -233,24 +296,50 @@ class ProductosController extends Controller
    */
   public function destroy($id)
   {
-    try {
-      DB::beginTransaction();
+    // Auth::user()->hasRole('Administrador')
+    if (Auth::user()->hasRole('Administrador')) {
+      try {
+        DB::beginTransaction();
 
-      // buscar por id
-      $data = Producto::where('id', $id)->firstOrFail();
-      // borrar con soft delete
-      $nombre_ruta = Route::currentRouteName();
-      $nombre_ruta_sin_punto = explode('.', $nombre_ruta)[0];
-      $data->delete();
-      DB::commit();
+        // buscar por id
+        $data = Producto::where('id', $id)->firstOrFail();
+        $data->delete();
+        DB::commit();
 
-      return response()->json(['error' => false, 'mensaje' => 'Se eliminó ' . $this->nombre_crud . ' con éxito', 'url_redirect' => route($nombre_ruta_sin_punto . '.index')]);
-    } catch (\Exception $e) {
-      DB::rollback();
-      // Aquí puedes manejar el error como prefieras, por ejemplo, devolver una respuesta JSON con un mensaje de error.
-      return response()->json(['error' => true, 'mensaje' => $e->getMessage()], 500);
+        return response()->json(['error' => false, 'mensaje' => 'Se eliminó ' . $this->nombre_crud . ' con éxito']);
+      } catch (\Exception $e) {
+        DB::rollback();
+        // Aquí puedes manejar el error como prefieras, por ejemplo, devolver una respuesta JSON con un mensaje de error.
+        return response()->json(['error' => true, 'mensaje' => $e->getMessage()], 500);
+      }
+    } else {
+      return response()->json(['error' => true, 'mensaje' => 'No tienes permiso para esta acción'], 403);
     }
   }
+  // metodo para restaurar
+
+  public function restore($id)
+  {
+    if (Auth::user()->hasRole('Administrador')) {
+
+      try {
+        DB::beginTransaction();
+        // buscar por id
+        $data = Producto::withTrashed()->where('id', $id)->firstOrFail();
+        // restaurar
+        $data->restore();
+        DB::commit();
+        return response()->json(['error' => false, 'mensaje' => 'Se restauró ' . $this->nombre_crud . ' con éxito']);
+      } catch (\Exception $e) {
+        DB::rollback();
+        // Aquí puedes manejar el error como prefieras, por ejemplo, devolver una respuesta JSON con un mensaje de error.
+        return response()->json(['error' => true, 'mensaje' => $e->getMessage()], 500);
+      }
+    } else {
+      return response()->json(['error' => true, 'mensaje' => 'No tienes permiso para esta acción'], 403);
+    }
+  }
+
   //  search nombre en caso de existir la columna descripcion tambien
   public function buscar(Request $request)
   {
@@ -264,7 +353,7 @@ class ProductosController extends Controller
         $registro = new Producto();
         $fillableColumns = $registro->getFillable();
 
-        $registros = Producto::latest()
+        $registros = Producto::withTrashed()->latest()
           ->where(function ($query) use ($request, $fillableColumns) {
             foreach ($fillableColumns as $column) {
               $query->orWhere($column, 'like', '%' . $request->condicion . '%');
@@ -273,8 +362,19 @@ class ProductosController extends Controller
           ->paginate(10)
           ->withQueryString();
       } else {
-        $registros = Producto::latest()->paginate(10);
+        $registros = Producto::withTrashed()->latest()->paginate(10);
       }
+      $registros->load('inventario');
+      // poner al mismo nivel el campo "cantidad" de la relacion
+      $registros->map(function ($registro) {
+        if ($registro->inventario) {
+          $registro->cantidad = $registro->inventario->cantidad;
+        } else {
+          $registro->cantidad = 0; // o cualquier valor predeterminado que desees
+        }
+        $registro->visible = $registro->deleted_at ? false : true;
+        return $registro;
+      });
 
       if ($registros->isEmpty()) {
         throw new \Exception('No se encontraron resultados');

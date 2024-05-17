@@ -53,6 +53,17 @@
                             </div>
                         </div>
                         {{-- boton para crear otro elemento --}}
+                    @elseif ($encabezado == 'cantidad')
+                        <div class="mb-1 row">
+                            <label class="form-label">Cantidad en inventario</label>
+                            <div class="col-sm-12">
+                                {{-- onkeyup="this.value = Math.max(this.value, 0)" --}}
+                                <input id="input-cantidad" type="number" class="form-control"
+                                    placeholder="Cantidad en inventario" value="0" required
+                                    name="{{ $nombre_tabla }}[inventario][cantidad]">
+                            </div>
+                        </div>
+                    @elseif ($encabezado == 'visible')
                     @else
                         <div class="mb-1 row">
                             <label class="form-label">{{ ucfirst($encabezado) }}</label>
@@ -73,6 +84,8 @@
                         </div>
                     @endif
                 @endforeach
+                {{-- Agregar cantidad de en inventario se pondra input con un boton para aumentar inventario --}}
+
                 <div class="mb-2 row">
                     <label class="col-form-label col-sm-3 text-sm-end pt-sm-0"></label>
                     <div class="col-sm-12 text-end">

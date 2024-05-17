@@ -11,90 +11,62 @@
     <script>
         var ruta = "{{ $ruta }}";
         document.documentElement.setAttribute('ruta', ruta);
-        //
-        var id_tabla = "{{ $id_tabla }}";
-        //   csrf_token()
-        var csrf_token = "{{ csrf_token() }}";
-        //   ruta para editar
-        var nombre_ruta = "{{ $ruta_update }}";
+        var nombre_ruta = "{{ $ruta_store }}";
     </script>
-
 
     @vite(['resources/assets/js/funciones/' . $ruta . '/crud.js'])
 @endsection
 
-@section('title', 'Editar | ' . $nombre_crud)
+@section('title', 'Crear | ' . $nombre_crud)
 @section('content')
     <div class="card ">
         <div class="card-header">
-            Crear{{ $nombre_crud }}
+            Crear {{ $nombre_crud }}
 
         </div>
         <div class="card-body demo-vertical-spacing demo-only-element">
-            {{-- formulario $ruta --}}
-            <form class="needs-validation" id="formulario_crud" method="POST" action="{{ $ruta_update }}">
+            {{-- alerta --}}
+            {{-- formulario --}}
+            <form class="needs-validation" id="formulario_crud" method="POST" action="{{ $ruta_store }}">
                 @csrf
-                @method('PATCH')
                 {{-- key --}}
+
                 @foreach ($encabezados as $key => $encabezado)
                     @if ($encabezado == 'sinonimos')
                         {{-- select --}}
                         <div class="mb-1 row">
                             <label class="form-label">{{ ucfirst($encabezado) }}</label>
                             <div class="col-sm-12">
-                                <select class="mySelect_sinonimos" name="{{ $nombre_tabla }}[{{ $encabezado }}][]"
+                                <select class="mySelect_sinonimos" id="mySelect-{{ $key }}"
+                                    name="{{ $nombre_tabla }}[{{ $encabezado }}][]"
                                     {{ $tipoDato[$encabezado]['nullable'] ? '' : 'required' }}
                                     {{ $tipoDato[$encabezado]['longitud'] ? 'maxlength=' . $tipoDato[$encabezado]['longitud'] : '' }}
                                     {{ $tipoDato[$encabezado]['regex'] ? 'pattern=' . $tipoDato[$encabezado]['regex'] : '' }}
                                     {{ $tipoDato[$encabezado]['atributos'] ? $tipoDato[$encabezado]['atributos'] : '' }}>
-                                    @foreach ($data[$encabezado] as $sinonimo)
-                                        <option selected value="{{ $sinonimo }}">{{ $sinonimo }}</option>
-                                    @endforeach
+                                    <option value="" disabled>Escriba una o más sinonimos</option>
                                 </select>
                             </div>
                         </div>
-                        {{-- si el usuario tiene rol de Administrador --}}
-                    @elseif ($encabezado == 'cantidad')
-                        {{-- input --}}
-
-                        <div class="mb-1 row">
-                            <label class="form-label">Cantidad en inventario</label>
-                            <div class="col-sm-12">
-                                {{-- onkeyup="this.value = Math.max(this.value, 0)" --}}
-                                <input id="input-cantidad" type="number" class="form-control"
-                                    placeholder="Cantidad en inventario" required
-                                    name="{{ $nombre_tabla }}[inventario][cantidad]"
-                                    value="{{ $data['inventario']['cantidad'] }}" min="0">
-                            </div>
-                        </div>
-                    @elseif ($encabezado == 'visible')
+                        {{-- boton para crear otro elemento --}}
                     @else
                         <div class="mb-1 row">
                             <label class="form-label">{{ ucfirst($encabezado) }}</label>
                             <div class="col-sm-12">
-
                                 <input id="input-{{ $encabezado }}-{{ $key }}"
-                                    {{ Auth::user()->hasRole('Almacenista') ? 'readonly' : '' }}
                                     type="{{ $tipoDato[$encabezado]['tipo_input'] }}" class="form-control"
                                     placeholder="{{ $tipoDato[$encabezado]['placeholder'] }}"
-                                    value="{{ $data[$encabezado] }}"
                                     {{ $tipoDato[$encabezado]['nullable'] ? '' : 'required' }}
                                     {{ $tipoDato[$encabezado]['longitud'] ? 'maxlength=' . $tipoDato[$encabezado]['longitud'] : '' }}
                                     {{ $tipoDato[$encabezado]['regex'] ? 'pattern=' . $tipoDato[$encabezado]['regex'] : '' }}
-                                    {{ isset($tipoDato[$encabezado]['atributos']) ? $tipoDato[$encabezado]['atributos'] : '' }}
-                                    {{-- step, min, max --}}
-                                    {{ isset($tipoDato[$encabezado]['step']) ? 'step=' . $tipoDato[$encabezado]['step'] : '' }}
-                                    {{ isset($tipoDato[$encabezado]['min']) ? 'min=' . $tipoDato[$encabezado]['min'] : '' }}
-                                    {{ isset($tipoDato[$encabezado]['max']) ? 'max=' . $tipoDato[$encabezado]['max'] : '' }}
                                     name="{{ $nombre_tabla }}[{{ $encabezado }}]">
                             </div>
                         </div>
                     @endif
                 @endforeach
-                <div class="mb-1 row">
+                <div class="mb-2 row">
                     <label class="col-form-label col-sm-3 text-sm-end pt-sm-0"></label>
                     <div class="col-sm-12 text-end">
-                        <button type="submit" class="btn btn-primary" id="agregar">Editar</button>
+                        <button type="submit" class="btn btn-primary" id="agregar">Agregar</button>
                     </div>
                 </div>
             </form>

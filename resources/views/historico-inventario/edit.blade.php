@@ -35,7 +35,6 @@
             <form class="needs-validation" id="formulario_crud" method="POST" action="{{ $ruta_update }}">
                 @csrf
                 @method('PATCH')
-                {{-- key --}}
                 @foreach ($encabezados as $key => $encabezado)
                     @if ($encabezado == 'sinonimos')
                         {{-- select --}}
@@ -53,39 +52,17 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- si el usuario tiene rol de Administrador --}}
-                    @elseif ($encabezado == 'cantidad')
-                        {{-- input --}}
-
-                        <div class="mb-1 row">
-                            <label class="form-label">Cantidad en inventario</label>
-                            <div class="col-sm-12">
-                                {{-- onkeyup="this.value = Math.max(this.value, 0)" --}}
-                                <input id="input-cantidad" type="number" class="form-control"
-                                    placeholder="Cantidad en inventario" required
-                                    name="{{ $nombre_tabla }}[inventario][cantidad]"
-                                    value="{{ $data['inventario']['cantidad'] }}" min="0">
-                            </div>
-                        </div>
-                    @elseif ($encabezado == 'visible')
+                        {{-- boton para crear otro elemento --}}
                     @else
                         <div class="mb-1 row">
                             <label class="form-label">{{ ucfirst($encabezado) }}</label>
                             <div class="col-sm-12">
-
-                                <input id="input-{{ $encabezado }}-{{ $key }}"
-                                    {{ Auth::user()->hasRole('Almacenista') ? 'readonly' : '' }}
-                                    type="{{ $tipoDato[$encabezado]['tipo_input'] }}" class="form-control"
+                                <input type="{{ $tipoDato[$encabezado]['tipo_input'] }}" class="form-control"
                                     placeholder="{{ $tipoDato[$encabezado]['placeholder'] }}"
                                     value="{{ $data[$encabezado] }}"
                                     {{ $tipoDato[$encabezado]['nullable'] ? '' : 'required' }}
                                     {{ $tipoDato[$encabezado]['longitud'] ? 'maxlength=' . $tipoDato[$encabezado]['longitud'] : '' }}
                                     {{ $tipoDato[$encabezado]['regex'] ? 'pattern=' . $tipoDato[$encabezado]['regex'] : '' }}
-                                    {{ isset($tipoDato[$encabezado]['atributos']) ? $tipoDato[$encabezado]['atributos'] : '' }}
-                                    {{-- step, min, max --}}
-                                    {{ isset($tipoDato[$encabezado]['step']) ? 'step=' . $tipoDato[$encabezado]['step'] : '' }}
-                                    {{ isset($tipoDato[$encabezado]['min']) ? 'min=' . $tipoDato[$encabezado]['min'] : '' }}
-                                    {{ isset($tipoDato[$encabezado]['max']) ? 'max=' . $tipoDato[$encabezado]['max'] : '' }}
                                     name="{{ $nombre_tabla }}[{{ $encabezado }}]">
                             </div>
                         </div>

@@ -12,6 +12,10 @@ class Venta extends Model
   use HasFactory;
   use SoftDeletes;
   protected $dates = ['deleted_at'];
+  protected $fillable = [
+    'cantidad',
+    'producto_id',
+  ];
 
   public function producto()
   {

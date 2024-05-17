@@ -160,15 +160,27 @@ function addEventBorrarRegistro() {
     });
   }
 }
+// funcion para recuperar registro
+function addEventRecuperarRegistro() {
+  if (document.querySelectorAll(".recuperar")) {
+    let elementos = document.querySelectorAll(".recuperar");
+    elementos.forEach(elemento => {
+      elemento.addEventListener("click", (e) => {
+        e.preventDefault();
+        recuperar(elemento.getAttribute("data-id"));
+      });
+    });
+  }
+}
 
 // ejecutar la funcion al cargar el dom
 document.addEventListener('DOMContentLoaded', addEventBorrarRegistro);
+document.addEventListener('DOMContentLoaded', addEventRecuperarRegistro);
 
 function borrar(id) {
   // sweetalert2
   Swal.fire({
     title: '¿Estas seguro?',
-    text: "¡No podras revertir esto!",
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Si, borrar',
@@ -208,72 +220,34 @@ function borrar(id) {
             }).then((result) => {
               if (result.isConfirmed) {
                 // redireccionar
-                window.location.href = data.url_redirect;
+                window.location.href= window.location.href
               }
             });
-
+          }
+          else {
+            // se muestra una alerta
+            Swal.fire({
+              title: "Error",
+              text: data.message ?? data.mensaje,
+              icon: 'error',
+              customClass: {
+                confirmButton: 'btn btn-danger'
+              },
+              buttonsStyling: false,
+            });
           }
         });
     }
   })
 }
-// borrar imagen de modelo
-function borrarImagenModelo(id) {
-  Swal.fire({
-    title: '¿Estas seguro?',
-    text: "¡No podras revertir esto!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Si, borrar',
-    cancelButtonText: 'No, cancelar',
-    customClass: {
-      confirmButton: 'btn btn-primary me-3',
-      cancelButton: 'btn btn-outline-danger'
-    },
-    buttonsStyling: false,
-    preConfirm: async (login) => {
-      try {
-
-        const response = await fetch(`${window.baseUrl}catalogos/${window.route}/destroyImageProducto/${id}`);
-        if (!response.ok) {
-          return Swal.showValidationMessage(`
-            Error: ${response.statusText}
-          `);
-        }
-        const data = await response.json();
-        if (data.error == false && data.message) {
-          Swal.fire({
-            title: "Borrado",
-            text: data.message,
-            icon: 'success',
-            customClass: {
-              confirmButton: 'btn btn-success'
-            },
-            buttonsStyling: false,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // borrar la imagen de dom
-              document.getElementById(`imagen-${id}`).classList.add("d-none");
-            }
-          });
-        }
-      } catch (error) {
-        Swal.showValidationMessage(`Request failed: ${error}`);
-      }
-    }
-  });
-}
-// borrar modelo
-function borrarModelo(elemento, deleteElement) {
-  // borrarModelo(elemento, deleteElement);
+// recuperar registro en softdelete
+function recuperar(id) {
   // sweetalert2
-  let id = elemento.getAttribute("data-id");
   Swal.fire({
     title: '¿Estas seguro?',
-    text: "¡No podras revertir esto!",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Si, borrar',
+    confirmButtonText: 'Si, recuperar',
     cancelButtonText: 'No, cancelar',
     customClass: {
       confirmButton: 'btn btn-primary me-3',
@@ -282,9 +256,9 @@ function borrarModelo(elemento, deleteElement) {
     buttonsStyling: false,
     // cuando se da click en el boton de confirmar
     preConfirm: () => {
-      // se envia la peticion /productos/destroyImageProducto/{producto}
-      fetch(`${window.baseUrl}catalogos/${window.route}/destroyModeloProducto/${id}`, {
-        method: "DELETE",
+      // se envia la peticion
+      fetch(`${window.baseUrl}catalogos/${window.route}/restore/${id}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -294,12 +268,13 @@ function borrarModelo(elemento, deleteElement) {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.error == false && data.message) {
+          // si la peticion es correcta
+          if (data.error == false && (data.message || data.mensaje)) {
             // se quita el registo tabla-registro-${id}
             // document.getElementById(`tabla-registro-${id}`).remove();
             // se muestra una alerta
             Swal.fire({
-              title: "Borrado",
+              title: "Recuperado",
               text: data.message,
               icon: 'success',
               customClass: {
@@ -308,12 +283,22 @@ function borrarModelo(elemento, deleteElement) {
               buttonsStyling: false,
             }).then((result) => {
               if (result.isConfirmed) {
-                // borrar la imagen de dom
-                // elemento.getAttribute("data-id")
-                $(elemento).slideUp(deleteElement);
+                // redirecciona recargar la pagina
+                window.location.href= window.location.href
               }
             });
-
+          }
+          else {
+            // se muestra una alerta
+            Swal.fire({
+              title: "Error",
+              text: data.message ?? data.mensaje,
+              icon: 'error',
+              customClass: {
+                confirmButton: 'btn btn-danger'
+              },
+              buttonsStyling: false,
+            });
           }
         });
     }
@@ -384,6 +369,7 @@ if (document.getElementById(nombre_formulario)) {
                 window.location.href = data.url_redirect;
               }
             });
+            formulario.querySelector('button[type="submit"]').disabled = false;
           }
           if (data.error == true && data.message) {
             // si existe errors se recoren los campos y se muestra una lista de errores
@@ -405,9 +391,13 @@ if (document.getElementById(nombre_formulario)) {
               },
               buttonsStyling: false,
             });
+            // habilitar boton de submit
+            formulario.querySelector('button[type="submit"]').disabled = false;
           }
         })
         .catch(error => {
+          // habilitar boton de submit
+          formulario.querySelector('button[type="submit"]').disabled = false;
           console.error('Error al enviar el formulario:', error);
         });
     });
