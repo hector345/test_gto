@@ -12,10 +12,14 @@ class HistoricoInventario extends Model
   use SoftDeletes;
   protected $dates = ['deleted_at'];
   protected $fillable = [
-    'cantidad',
     'tipo_movimiento_id',
-    'inventario_id',
+    'user_id',
+    'cantidad',
+    'producto_id',
   ];
+  // created_at updated_at
+
+
 
 
   public function tipoMovimiento()
@@ -26,5 +30,10 @@ class HistoricoInventario extends Model
   public function inventario()
   {
     return $this->belongsTo(Inventario::class);
+  }
+  // user_id
+  public function user()
+  {
+    return $this->belongsTo(User::class);
   }
 }

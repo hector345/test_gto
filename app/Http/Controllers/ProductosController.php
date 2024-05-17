@@ -15,6 +15,8 @@ use App\Models\Producto;
 use Illuminate\Support\Facades\Schema;
 use App\Rules\GreaterThanCurrentQuantity;
 use Illuminate\Support\Facades\Auth;
+// HistoricoInventario
+use App\Models\HistoricoInventario;
 
 
 class ProductosController extends Controller
@@ -26,8 +28,8 @@ class ProductosController extends Controller
     'nombre',
     'precio',
     'cantidad',
-    'visible',
   ];
+  // quitar visible si es Almacenista
 
   /**
    * Display a listing of the resource.
@@ -44,10 +46,22 @@ class ProductosController extends Controller
 
     if ($request->has('page')) {
       // no traer team
-      $registros = Producto::withTrashed()->latest()->paginate(10)->withQueryString();
+      // si Auth::user()->hasRole('Administrador') muestra todos los registros y si es Almacenero solo los visibles
+      // $registros = Producto::withTrashed()->latest()->paginate(10)->withQueryString();
+      // se declara la variable registros en blanco
+      if (Auth::user()->hasRole('Administrador')) {
+        $registros = Producto::withTrashed()->latest()->paginate(10)->withQueryString();
+      } else {
+        $registros = Producto::latest()->paginate(10)->withQueryString();
+      }
     } else {
       // si no tiene ?page=1 o cualquier numero, entonces se usa la pagina 1
-      $registros = Producto::withTrashed()->latest()->paginate(10);
+      // $registros = Producto::withTrashed()->latest()->paginate(10);
+      if (Auth::user()->hasRole('Administrador')) {
+        $registros = Producto::withTrashed()->latest()->paginate(10);
+      } else {
+        $registros = Producto::latest()->paginate(10);
+      }
     }
 
 
@@ -65,6 +79,10 @@ class ProductosController extends Controller
       return $registro;
     });
     $nombre_ruta = Route::currentRouteName();
+    // agreagr
+    if (Auth::user()->hasRole('Administrador')) {
+      $this->columnas_crud[] = 'visible';
+    }
 
     return view($nombre_ruta, [
       'listado' => $registros,
@@ -124,11 +142,6 @@ class ProductosController extends Controller
     $datos = $request->all();
     try {
       DB::beginTransaction();
-      $registro = Producto::create($datos[$nombre_tabla]);
-      // agregar cantidad a la relacion inventario
-      $registro->inventario()->create($datos['productos']['inventario']);
-
-      // Validar la cantidad después de crear el producto
       $validator = Validator::make($datos['productos']['inventario'], [
         'cantidad' => [
           'numeric',
@@ -138,6 +151,7 @@ class ProductosController extends Controller
         'cantidad.min' => 'La cantidad no puede ser menor a 0',
       ]);
 
+
       if ($validator->fails()) {
         DB::rollback();
         return response()->json([
@@ -146,6 +160,23 @@ class ProductosController extends Controller
           'errors' => $validator->errors(),
         ]);
       }
+      $registro = Producto::create($datos[$nombre_tabla]);
+      // agregar cantidad a la relacion inventario
+      $registro->inventario()->create($datos['productos']['inventario']);
+
+      // Validar la cantidad después de crear el producto
+      // guardar en historico_inventario tipo_movimiento_id, user_id, cantidad,
+      // si es administrados es entrada y si es almaceniasta es salida
+      // 1: entrada y 2: salida
+      $datos = [
+        'tipo_movimiento_id' => (Auth::user()->hasRole('Administrador')) ? 1 : 2,
+        'user_id' => Auth::id(),
+        'cantidad' => $datos['productos']['inventario']['cantidad'],
+        'producto_id' => $registro->id,
+      ];
+      $historico_inventario = HistoricoInventario::create($datos);
+
+
 
       $nombre_ruta = Route::currentRouteName();
       $nombre_ruta_sin_punto = explode('.', $nombre_ruta)[0];
@@ -262,11 +293,23 @@ class ProductosController extends Controller
           'errors' => $validator->errors(),
         ]);
       } else {
+        //////
+
+        ///
         $registro->update($data['productos']);
         // agregar producto_id a $data['productos']['inventario']
         $data['productos']['inventario']['producto_id'] = $registro->id;
 
         $registro->inventario()->update($data['productos']['inventario']);
+        $idUsuario = Auth::id();
+        // dd($idUsuario);
+        $datos = [
+          'tipo_movimiento_id' => (Auth::user()->hasRole('Administrador')) ? 1 : 2,
+          'user_id' => $idUsuario,
+          'cantidad' => $data['productos']['inventario']['cantidad'] - $cantidad_anterior,
+          'producto_id' => $registro->id,
+        ];
+        $historico_inventario = HistoricoInventario::create($datos);
         $nombre_ruta = Route::currentRouteName();
         $nombre_ruta_sin_punto = explode('.', $nombre_ruta)[0];
         DB::commit();
@@ -352,17 +395,31 @@ class ProductosController extends Controller
       if ($request->has('condicion')) {
         $registro = new Producto();
         $fillableColumns = $registro->getFillable();
-
-        $registros = Producto::withTrashed()->latest()
-          ->where(function ($query) use ($request, $fillableColumns) {
-            foreach ($fillableColumns as $column) {
-              $query->orWhere($column, 'like', '%' . $request->condicion . '%');
-            }
-          })
-          ->paginate(10)
-          ->withQueryString();
+        if (Auth::user()->hasRole('Administrador')) {
+          $registros = Producto::withTrashed()->latest()
+            ->where(function ($query) use ($request, $fillableColumns) {
+              foreach ($fillableColumns as $column) {
+                $query->orWhere($column, 'like', '%' . $request->condicion . '%');
+              }
+            })
+            ->paginate(10)
+            ->withQueryString();
+        } else {
+          $registros = Producto::latest()
+            ->where(function ($query) use ($request, $fillableColumns) {
+              foreach ($fillableColumns as $column) {
+                $query->orWhere($column, 'like', '%' . $request->condicion . '%');
+              }
+            })
+            ->paginate(10)
+            ->withQueryString();
+        }
       } else {
-        $registros = Producto::withTrashed()->latest()->paginate(10);
+        if (Auth::user()->hasRole('Administrador')) {
+          $registros = Producto::withTrashed()->latest()->paginate(10);
+        } else {
+          $registros = Producto::latest()->paginate(10);
+        }
       }
       $registros->load('inventario');
       // poner al mismo nivel el campo "cantidad" de la relacion

@@ -14,11 +14,13 @@ return new class extends Migration
     Schema::create('inventarios', function (Blueprint $table) {
       $table->id();
       // producto_id a la tabla producto
-      $table->foreignId('producto_id')->constraint();
+      $table->unsignedBigInteger('producto_id');
       // cantidad default 0
       $table->integer('cantidad')->default(0);
       $table->timestamps();
       $table->softDeletes(); // Añadir borrado lógico
+      // relacion
+      $table->foreign('producto_id')->references('id')->on('productos');
     });
   }
 

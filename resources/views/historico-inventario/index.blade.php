@@ -31,7 +31,7 @@
 @section('content')
     <div class="card ">
         <div class="card-header">
-            Catalogo {{ $nombre }}
+            {{ $nombre }}
         </div>
         <div class="card-body">
             {{-- buscador --}}
@@ -42,17 +42,6 @@
                         <input type="text" id="buscar" class="form-control" placeholder="Buscar..."
                             aria-label="Buscar..." aria-describedby="buscar">
                     </div>
-                </div>
-                <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 col-xxl-2">
-                    <a class="btn create-new btn-primary" tabindex="0" href="{{ url($ruta_web . '/create') }}"
-                        aria-controls="DataTables_Table_0" type="button">
-                        <span>
-                            <i class="ti ti-plus me-sm-1"></i>
-                            <span class="d-none d-sm-inline-block">
-                                Agregar
-                            </span>
-                        </span>
-                    </a>
                 </div>
             </div>
 
@@ -73,9 +62,6 @@
                                     </th>
                                 @endif
                             @endforeach
-                            <th scope="col" class="d-table-cell">
-                                acciones
-                            </th>
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -90,13 +76,22 @@
                                         </td>
                                     @else
                                         {{-- si tipoDato[nombre_campo][tipo] es un json genera <span
-							class="badge rounded-pill bg-primary">Primary</span> --}}
-                                        @if ($tipoDato[$encabezado]['tipo'] == 'json')
+                                  class="badge rounded-pill bg-primary">Primary</span> --}}
+                                        @if (isset($tipoDato[$encabezado]) && $tipoDato[$encabezado]['tipo'] == 'json' && isset($item->$encabezado))
                                             <td class="d-none d-lg-table-cell">
                                                 @foreach ($item->$encabezado as $itemJson)
                                                     <span
                                                         class="badge my-1 me-1 rounded-pill bg-primary">{{ $itemJson }}</span>
                                                 @endforeach
+                                            </td>
+                                            {{-- y si es "visible" se muestra icono de ojo y si no icono de ojo tachado --}}
+                                        @elseif ($encabezado == 'visible')
+                                            <td class="d-none d-lg-table-cell">
+                                                @if ($item->$encabezado)
+                                                    <i class="ti ti-eye"></i>
+                                                @else
+                                                    <i class="ti ti-eye-off"></i>
+                                                @endif
                                             </td>
                                         @else
                                             <td class="d-none d-lg-table-cell">
@@ -105,17 +100,6 @@
                                         @endif
                                     @endif
                                 @endforeach
-                                <td class="">
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <a href="{{ url($ruta_web . '/' . $item->id . '/edit') }}" class="text-body">
-                                            <i class="ti ti-edit ti-sm me-2"></i>
-                                        </a>
-                                        {{-- borrar --}}
-                                        <a class="text-body borrar" data-id="{{ $item->id }}">
-                                            <i class="ti ti-trash ti-sm"></i>
-                                        </a>
-                                    </div>
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>

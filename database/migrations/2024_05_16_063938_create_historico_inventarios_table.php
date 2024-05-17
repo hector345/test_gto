@@ -14,6 +14,7 @@ return new class extends Migration
     Schema::create('historico_inventarios', function (Blueprint $table) {
       $table->id();
       // tipo_movimiento_id
+      $table->unsignedBigInteger('producto_id');
       $table->foreignId('tipo_movimiento_id')->constrained();
       // user_id
       $table->foreignId('user_id')->constrained();
@@ -21,6 +22,7 @@ return new class extends Migration
       $table->integer('cantidad')->default(0)->comment('cantidad de productos de ese movimiento');
       $table->timestamps();
       $table->softDeletes(); // Añadir borrado lógico
+      $table->foreign('producto_id')->references('id')->on('productos');
     });
   }
 

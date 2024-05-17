@@ -1,66 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Configuración del proyecto Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sigue estos pasos para configurar tu proyecto Laravel:
 
-## About Laravel
+## Requisitos previos y herramientas de desarrollo
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP >= 8.2.1
+- Composer
+- Servidor de base de datos (MySQL)
+- Servidor web (Apache)
+- Node v20
+- IDE: Visual Studio Code
+- DBMS: DbShema y DBeaver
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Pasos de configuración
 
-## Learning Laravel
+1. **Clonar el repositorio**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+`git clone https://github.com/usuario/proyecto.git`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Instalar dependencias**
 
-## Laravel Sponsors
+Navega hasta el directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+`composer install`
+`yarn`
+`yarn build && yarn dev`
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+3. **Configurar el entorno**
 
-## Contributing
+Copia el archivo `.env` en la raíz del proyecto adjunto en el correo.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Luego, abre el archivo `.env` y configura las variables de entorno para tu aplicación, incluyendo las credenciales de la base de datos y cualquier otra configuración específica de tu aplicación.
 
-## Code of Conduct
+4. **Generar la clave de la aplicación**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Ejecuta el siguiente comando para generar la clave de la aplicación:
 
-## Security Vulnerabilities
+`php artisan key:generate`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Configurar el servidor**
 
-## License
+Agrega un virtual host y agrégalo en el archivo .env 
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. **Ejecutar las migraciones y los seeders**
+
+Ejecuta el siguiente comando para realizar las migraciones y llenar la base de datos con datos de prueba:
+
+
+`php artisan migrate --seed`
+
+7. **Iniciar el servidor**
+
+Finalmente, inicia el servidor.
+
+8. **Sitio en Producción**
+
+<!-- link https://inventarios.desarrollodigital.tech/ -->
+
+Ingresa en [inventarios.desarrollodigital.tech](inventario.desarrollodigital.tech,"Title") 
+
+<!-- con los usuarios -->
+Administrador: administrador@inventarios.desarrollodigital.tech
+Almacenista: almacenista@inventarios.desarrollodigital.tech
+
+Contraseña: password
+
+# EJERCICIOS
+
+## Conocimientos SQL
+
+1.1 Describe el funcionamiento general de la sentencia JOIN
+
+Es para unir 2 o más tablas de distintas formas comúnmente usando las llaves primarias y foráneas para unirlas.
+
+1.2 ¿Cuáles son los tipos de JOIN y cuál es el funcionamiento de los mismos?
+
+INNER JOIN:
+Trae las coincidencias de ambas tablas.
+
+LEFT JOIN:
+Trae la columna y las filas que coinciden con la tabla de la derecha.
+
+FULL JOIN:
+Trae las filas de todas las tablas.
+
+RIGHT JOIN:
+Trae las filas de la tabla de la derecha y los registros que coinciden.
+
+1.3 ¿Cuál es el funcionamiento general de los TRIGGER y qué propósito tienen?
+
+Son eventos que se disparan cuando se realiza alguna instrucción específica en la base de datos, es muy útil para los casos que se requieran automatizar tareas.
+
+1.4 ¿Qué es y para qué sirve un STORED PROCEDURE?
+
+Son para almacenar sentencias comúnmente usadas y permiten ahorrar líneas de código y establecer patrones y orden.
+
+Consultas Prácticas
+
+Traer todos los productos que tengan una venta (1.5):

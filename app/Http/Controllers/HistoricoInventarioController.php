@@ -21,7 +21,11 @@ class HistoricoInventarioController extends Controller
   // user_id
   // cantidad
   public $columnas_crud = [
+    // tipo_movimiento_id
+    'tipoMovimiento',
+    'usuario',
     'cantidad',
+    'tiempo'
   ];
 
   /**
@@ -41,6 +45,18 @@ class HistoricoInventarioController extends Controller
       // si no tiene ?page=1 o cualquier numero, entonces se usa la pagina 1
       $registros = HistoricoInventario::latest()->paginate(10);
     }
+    \Carbon\Carbon::setLocale('es');
+    // map para obtener datos de la relacion
+    $registros->map(function ($registro) {
+      // tipoMovimiento, inventario, user
+      $registro->tipoMovimiento = $registro->tipoMovimiento->nombre;
+      $registro->usuario = $registro->user->name;
+      // getCreatedAtAttribute
+      $registro->tiempo = \Carbon\Carbon::parse($registro->created_at)->diffForHumans();
+      // getUpdatedAtAttribute
+      return $registro;
+    });
+
     $nombre_ruta = Route::currentRouteName();
 
     return view($nombre_ruta, [
@@ -269,11 +285,28 @@ class HistoricoInventarioController extends Controller
               $query->orWhere($column, 'like', '%' . $request->condicion . '%');
             }
           })
+          ->orWhereHas('tipoMovimiento', function ($query) use ($request) {
+            $query->where('nombre', 'like', '%' . $request->condicion . '%');
+          })
+          ->orWhereHas('user', function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->condicion . '%');
+          })
           ->paginate(10)
           ->withQueryString();
       } else {
         $registros = HistoricoInventario::latest()->paginate(10);
       }
+      \Carbon\Carbon::setLocale('es');
+      // map para obtener datos de la relacion
+      $registros->map(function ($registro) {
+        // tipoMovimiento, inventario, user
+        $registro->tipoMovimiento = $registro->tipoMovimiento->nombre;
+        $registro->usuario = $registro->user->name;
+        // getCreatedAtAttribute
+        $registro->tiempo = \Carbon\Carbon::parse($registro->created_at)->diffForHumans();
+        // getUpdatedAtAttribute
+        return $registro;
+      });
 
       if ($registros->isEmpty()) {
         throw new \Exception('No se encontraron resultados');

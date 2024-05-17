@@ -1,29 +1,29 @@
 <?php
 // Variables
 return [
-  "creatorName" => "Pixinvent",
-  "creatorUrl" => "https://pixinvent.com",
-  "templateName" => "Vuexy",
-  "templateSuffix" => "Bootstrap Admin Template",
-  "templateVersion" => "1.0.0",
+  "creatorName" => "Héctor Espinoza Mena",
+  "creatorUrl" => "https://paqueteriacastores.mx/",
+  "templateName" => "INVENTARIO",
+  "templateSuffix" => "Sistema de Rastreo y Cotización",
+  "templateVersion" => "1.0",
   "templateFree" => false,
-  "templateDescription" => "Start your development with a Dashboard for Bootstrap 5",
-  "templateKeyword" => "dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5",
-  "licenseUrl" => "https://themeforest.net/licenses/standard",
-  "livePreview" => "https://demos.pixinvent.com/vuexy-html-admin-template/landing/",
-  "productPage" => "https://1.envato.market/vuexy_admin",
-  "support" => "https://pixinvent.ticksy.com/",
-  "moreThemes" => "https://1.envato.market/pixinvent_portfolio",
-  "documentation" => "https://demos.pixinvent.com/vuexy-html-admin-template/documentation",
+  "templateDescription" => "Cotiza y rastrea tus envíos de manera rápida y sencilla",
+  "templateKeyword" => "paquetería, envíos, rastreo, cotización, México",
+  "licenseUrl" => "",  // Paquetería Castores likely has its own terms of service
+  "livePreview" => "",   // Paquetería Castores likely doesn't have a public preview
+  "productPage" => "https://paqueteriacastores.mx/rastreo-y-seguimiento/",  // Link to their tracking page
+  "support" => "https://paqueteriacastores.mx/contacto/",  // Link to their contact page
+  "moreThemes" => "",   // Paquetería Castores likely doesn't offer other themes
+  "documentation" => "",  // Paquetería Castores likely doesn't have public documentation
   "generator" => "",
-  "changelog" => "https://demos.pixinvent.com/vuexy/changelog.html",
-  "repository" => "https://github.com/pixinvent/vuexy-html-admin-template",
-  "gitRepo" => "pixinvent",
-  "gitRepoAccess" => "vuexy-html-admin-template",
-  "githubFreeUrl" => "https://tools.pixinvent.com/github/github-access",
-  "facebookUrl" => "https://www.facebook.com/pixinvents/",
-  "twitterUrl" => "https://twitter.com/pixinvents",
-  "githubUrl" => "https://github.com/pixinvent",
-  "dribbbleUrl" => "https://dribbble.com/pixinvent",
-  "instagramUrl" => "https://www.instagram.com/pixinvents/"
+  "changelog" => "",   // Paquetería Castores likely doesn't have a public changelog
+  "repository" => "",   // Paquetería Castores likely doesn't have a public code repository
+  "gitRepo" => "",
+  "gitRepoAccess" => "",
+  "githubFreeUrl" => "",
+  "facebookUrl" => "https://www.facebook.com/CastoresPaqueteria/",  // Link to their Facebook page (assuming it exists)
+  "twitterUrl" => "",   // Paquetería Castores likely doesn't have a public Twitter account
+  "githubUrl" => "",
+  "dribbbleUrl" => "",
+  "instagramUrl" => "",  // Paquetería Castores likely doesn't have a public Instagram account
 ];

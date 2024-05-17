@@ -2,21 +2,9 @@
   "menu": [
     {
       "url": "/",
-      "name": "Inicio2",
+      "name": "Inicio",
       "icon": "menu-icon tf-icons ti ti-smart-home",
       "slug": "pages-home"
-    },
-    {
-      "icon": "menu-icon tf-icons ti ti-category",
-      "name": "Catalogos",
-      "slug": "pages-catalogos",
-      "submenu": [
-        {
-          "url": "/catalogos/tipo-movimiento",
-          "name": "Tipo de movimiento",
-          "slug": "pages-catalogos-tipo-movimiento"
-        }
-      ]
     },
     {
       "icon": "menu-icon tf-icons ti ti-package",
@@ -31,18 +19,6 @@
         {
           "url": "/catalogos/productos",
           "name": "Listado de productos",
-          "slug": "pages-inventario-listado"
-        }
-      ]
-    },
-    {
-      "icon": "menu-icon tf-icons ti ti-package-export",
-      "name": "Salida de productos",
-      "slug": "pages-salida",
-      "submenu": [
-        {
-          "url": "/",
-          "name": "Listado de productos (vista)",
           "slug": "pages-inventario-listado"
         }
       ]

@@ -43,17 +43,19 @@
                             aria-label="Buscar..." aria-describedby="buscar">
                     </div>
                 </div>
-                <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 col-xxl-2">
-                    <a class="btn create-new btn-primary" tabindex="0" href="{{ url($ruta_web . '/create') }}"
-                        aria-controls="DataTables_Table_0" type="button">
-                        <span>
-                            <i class="ti ti-plus me-sm-1"></i>
-                            <span class="d-none d-sm-inline-block">
-                                Agregar
+                @if (Auth::user()->hasRole('Administrador'))
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 col-xxl-2">
+                        <a class="btn create-new btn-primary" tabindex="0" href="{{ url($ruta_web . '/create') }}"
+                            aria-controls="DataTables_Table_0" type="button">
+                            <span>
+                                <i class="ti ti-plus me-sm-1"></i>
+                                <span class="d-none d-sm-inline-block">
+                                    Agregar
+                                </span>
                             </span>
-                        </span>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                @endif
             </div>
 
             <div id="tabla-{{ $nombreMod }}">
