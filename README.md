@@ -31,7 +31,7 @@ Navega hasta el directorio del proyecto y ejecuta el siguiente comando para inst
 
 3. **Configurar el entorno**
 
-Copia el archivo `.env` en la raíz del proyecto adjunto en el correo.
+Copia el archivo `.env` en la raíz del proyecto adjunto en el correo o usa el elenv de ejemplo y cambia la configuracion de bases de datos.
 
 Luego, abre el archivo `.env` y configura las variables de entorno para tu aplicación, incluyendo las credenciales de la base de datos y cualquier otra configuración específica de tu aplicación.
 
@@ -60,7 +60,7 @@ Finalmente, inicia el servidor.
 
 <!-- link https://inventarios.desarrollodigital.tech/ -->
 
-Ingresa en [inventarios.desarrollodigital.tech](inventario.desarrollodigital.tech,"Title") 
+Ingresa en <a href="https://inventario.desarrollodigital.tech" target="_blank">https://inventario.desarrollodigital.tech</a>
 
 <!-- con los usuarios -->
 Administrador: administrador@inventario.desarrollodigital.tech
